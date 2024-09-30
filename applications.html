@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excellence Academy - Applications</title>
+    <link rel="icon" href="./images/tuition1.png">
+    <style></style>
+    
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.9.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <!-- google font poppins -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .font-poppins{
+        font-family: "Poppins", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="font-poppins">
+    <header>
+
+      <!-- navbar -->
+      <nav class="font-poppins">
+        <div class="navbar flex-col lg:flex-row bg-base-100 shadow-lg">
+          <div class="lg:flex-1">
+            <a class="btn btn-ghost lg:text-2xl" href="index.html"
+              ><span class="text-blue-600 font-bold">Excellence</span>Academy</a
+            >
+          </div>
+          <div class="">
+            <ul class="menu menu-horizontal px-1">
+              <li>
+                <a class="font-semibold lg:text-lg" href="index.html"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a class="font-semibold lg:text-lg" href="all_tuitions.html"
+                  >All Tuitions</a
+                >
+              </li>
+              <li>
+                <a class="font-semibold lg:text-lg" href="about_us.html"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a class="font-semibold lg:text-lg" href="contact_us.html"
+                  >Contact Us</a
+                >
+              </li>
+              <li id="registration-container">
+                <a href="registration.html" class="font-semibold lg:text-lg"
+                  >Registration</a
+                >
+              </li>
+              <li id="login-container">
+                <a href="login.html" class="font-semibold lg:text-lg">Login</a>
+              </li>
+              <li>
+                <details id="profile-container" class="profile-container">
+                  <summary class="font-semibold bg-base-100 lg:text-lg mr-4">
+                    Profile
+                  </summary>
+                  <ul class="p-2 bg-gray-200 rounded-t-none">
+                    <li class="border-gray-400 border-b">
+                      <a href="profile.html">Profile</a>
+                    </li>
+                    <li class="border-gray-400 border-b">
+                      <a href="applications.html">Applications</a>
+                    </li>
+                    <li onclick="handlelogout(event)"><a href="">LogOut</a></li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div>
+        <p class="text-red-600 font-bold mt-4" id="error_message"></p>
+      </div>
+
+      <h1 class="text-center text-xl font-bold mt-12 mx-20 lg:mx-80 pb-2  border-b border-cyan-400">All Application of <br> <span class="text-cyan-600 text-xl lg:text-2xl" id="profile_name">Mansib Munshi</span></h1>
+
+      <div class="overflow-x-auto border  rounded-lg m-12">
+        <table class="table">
+          <!-- head -->
+          <thead>
+            <tr class="bg-base-200">
+              <th>Serial No.</th>
+              <th>Class</th>
+              <th>Salary</th>
+              <th>Address</th>
+              <th>Day Per Week</th>
+              <th>Confirm</th>
+              <th>Cancel</th>
+            </tr>
+          </thead>
+          <tbody id="table_row">
+            <!-- data fetched from the js code -->
+            
+            
+          </tbody>
+        </table>
+      </div>
+
+
+      <!-- footer section -->
+      <footer
+      class="footer p-10 bg-neutral text-neutral-content flex justify-around"
+    >
+      <nav>
+        <h6 class="footer-title">Services</h6>
+        <a class="link link-hover">Branding</a>
+        <a class="link link-hover">Design</a>
+        <a class="link link-hover">Marketing</a>
+        <a class="link link-hover">Advertisement</a>
+      </nav>
+      <nav>
+        <h6 class="footer-title">Company</h6>
+        <a class="link link-hover">About us</a>
+        <a class="link link-hover">Contact</a>
+        <a class="link link-hover">Jobs</a>
+        <a class="link link-hover">Press kit</a>
+      </nav>
+      <nav>
+        <h6 class="footer-title">Legal</h6>
+        <a class="link link-hover">Terms of use</a>
+        <a class="link link-hover">Privacy policy</a>
+        <a class="link link-hover">Cookie policy</a>
+      </nav>
+    </footer>
+
+    <!-- scripts -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      const teacher_id = localStorage.getItem("teacher_id")
+      const user_id = localStorage.getItem("user_id")
+      const token = localStorage.getItem("token")
+      function checkLoginStatus() {
+        if (!user_id && !token){
+            window.location.href = "login.html"
+        }
+    }
+    checkLoginStatus()
+
+    //fetching user model data to show user full name on the heading 
+    fetch(`http://127.0.0.1:8000/user/data/${user_id}`)
+    .then(response => response.json())
+    .then(user_data => {
+      const user_name = document.getElementById("profile_name")
+      user_name.innerText = `${user_data.first_name} ${user_data.last_name}`
+      
+    })
+    const table_row = document.getElementById("table_row")
+    let count=1
+
+    //fetching all application by logged in user
+    fetch(`http://127.0.0.1:8000/application/?teacher_id=${teacher_id}`)
+    .then(response => response.json())
+    .then(data => {
+      data.forEach((application) => {
+        const tr = document.createElement("tr")
+        
+        // fetching tuition model data by tuition id
+        fetch(`http://127.0.0.1:8000/tuition/?tuition_id=${application.tuition}`)
+        .then(response => response.json())
+        .then(tuition => {
+          tr.innerHTML =`
+          <th id="tuition_id${tuition[0].id}">${count}</th>
+          <td> <a href="tuition_details.html?tuition_id=${tuition[0].id}"> ${tuition[0].grade} </a> </td>
+          <td>${tuition[0].salary} BDT</td>
+          <td>${tuition[0].address}, ${tuition[0].location}</td>
+          <td>${tuition[0].day_perweek}</td>
+
+          <!-- confirmation condition diye check kortesi -->
+          ${
+            application.confirm == true ? `<td>Confirmed</td> ` : `<td>Pending</td>`
+          }
+
+          <!--  condition apply kortesi jodi confirm hoy taile green naile red -->
+          ${
+            application.confirm == false ? 
+            `<td><a href="" id="cancel_button" onclick="delete_application(${application.id},event)"> <i class="fa-solid text-xl text-red-600 fa-xmark"></i> </a></td>` : `<td><a href="" id="cancel_button" onclick="errorMessageHandle(event)"> <i class="fa-solid text-xl text-green-600 fa-xmark"></i> </a></td>`
+          }
+        `
+        count++
+        table_row.appendChild(tr)
+        })
+      })
+    })
+
+    const error_message = document.getElementById("error_message")
+    const cancel_button = document.getElementById("cancel_button")
+
+    
+
+    function delete_application(application_id,event){
+      event.preventDefault()
+      fetch(`http://127.0.0.1:8000/application/delete/${application_id}`)
+      .then(res => res.json())
+      .then(data => {
+        window.location.reload()
+        const del = true
+        
+        setTimeout(()=>{
+          window.location.reload()
+          // errorMessageHandle(event,del)
+        },1000)
+        // reload_page()
+        // window.location.reload()
+        // const del = true
+        errorMessageHandle(event,del)
+      })
+      
+    }
+
+    function reload_page(){
+      window.location.reload()
+    }
+
+    function errorMessageHandle(event,del){
+      event.preventDefault()
+      
+      if (del){
+        error_message.innerText = "Application have been Deleted."
+        error_message.classList = "text-green-600"
+      }
+      else{
+      error_message.innerText = "Application have been confirmed. You can not cancel it Now."
+      }
+    }
+
+    </script>
+    <script src="app.js"></script>
+    <script src="auth.js"></script>
+  </body>
+</html>
